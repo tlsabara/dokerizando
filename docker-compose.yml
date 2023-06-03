@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  projeto_php:
+    container_name: php
+    image: php
+    restart: always
+    build:
+      # DEMONSTAR AQUI
+      context: ./projeto_php
+      dockerfile: Dockerfile
+      target: base
+    ports:
+      - "${PORT}:80"
+
+  projeto_python_app:
+    build:
+      context: ./projeto_python/app
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DEV_ENV=${DEV_ENV}
+      - TEST_ENV=${TEST_ENV}
+      - COMPOSER=True
+    links:
+      - projeto_fake_gaspar
+    #depends:
+      #- projeto_fake_gaspar
+      # colocaria o container do db aqui
+  
+  projeto_fake_gaspar:
+    build:
+      context: ./projeto_python/fake_gaspar
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - API_KEY=${MINHA_KEY_NO_ENV}
+    volumes:
+      - type: bind
+        source: ./bind_mounts/fake_gaspar
+        target: /code/downloads
