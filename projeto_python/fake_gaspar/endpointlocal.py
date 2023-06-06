@@ -1,24 +1,31 @@
+import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 from datetime import datetime
 from sqlalchemy.sql.expression import select
-
-from endpoint_orm import Session, Base, engine
+from sqlalchemy import text as sql_txt
+from endpoint_orm import Session, Base, engine, TbDefaultResponses
 
 ROOT_DIR = Path(os.path.abspath(os.path.curdir))
+load_dotenv()
 
 
 def fn_app_log(message: str, error_trace: str = None) -> bool:
-    log_folder = ROOT_DIR / 'app_logs'
-    log_folder.mkdir(parents=True, exist_ok=True)
-    with open(log_folder / 'app_log.txt', 'a') as file:
-        file.write(f'|{f"LOG:{datetime.now()}":-^50}|\n')
-        file.write(f'|{f"MESSAGE:{message}": <50}|\n')
-        if error_trace:
-            file.write(error_trace)
-            file.write('\n')
-        file.write(f'|{f"END LOG":-^50}|\n')
+    global FILE_LOG
+    try:
+        with open(FILE_LOG / "log.txt", 'a') as file:
+            file.write(f'|{f"LOG:{datetime.now()}":-^150}|\n')
+            file.write(f'|{f"MESSAGE: {message}": <150}|\n')
+            if error_trace:
+                file.write(error_trace)
+                file.write('\n')
+            file.write(f'|{f"END LOG":-^150}|\n')
+    except Exception as e:
+        return False
+    else:
+        return True
 
 
 def save_request_data(path: str, recived_content: str) -> bool:
@@ -59,7 +66,7 @@ def collect_response_data(where_tag=None, where_id=None) -> str:
                         TbDefaultResponses.default_reponses_tag == where_tag
                     )
                 ).one()
-            fn_app_log('Dados Localizados corretamente.')
+            fn_app_log('Dados de resposta localizados corretamente.')
         else:
             raise ValueError("Parâmetros inválidos.")
     except Exception as e:
@@ -125,8 +132,37 @@ class APIServer(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    print('Iniciando ENDPOINT')
+    FILE_LOG = ROOT_DIR / 'app_logs' / f'run_{datetime.now().strftime("%Y%m%d%H%M%S")}'
+    FILE_LOG.mkdir(parents=True, exist_ok=True)
+    FILE_LOG = FILE_LOG
+    print('Carregando DB')
+    time.sleep(20)
     with Session() as db:
         Base.metadata.create_all(engine)
+        time.sleep(10)
+        inst_get = TbDefaultResponses(
+            default_reponses_route="*",
+            default_reponses_tag="def_GET_200",
+            default_reponses_content='{"method": "GET","status_code": 200,"message": "Request recebida com sucesso"}',
+            default_reponses_is_active=True,
+        )
+        inst_post = TbDefaultResponses(
+            default_reponses_route="*",
+            default_reponses_tag="def_POST_200",
+            default_reponses_content='{"method": "POST","status_code": 200,"message": "Request recebida com sucesso"}',
+            default_reponses_is_active=True,
+        )
+        inst_put = TbDefaultResponses(
+            default_reponses_route="*",
+            default_reponses_tag="def_PUT_200",
+            default_reponses_content='{"method": "PUT","status_code": 200,"message": "Request recebida com sucesso"}',
+            default_reponses_is_active=True,
+        )
+        db.add(inst_post)
+        db.add(inst_put)
+        db.add(inst_get)
+        db.commit()
 
     base_port = 8000
 

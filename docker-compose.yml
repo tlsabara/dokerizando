@@ -1,6 +1,18 @@
 version: "3.9"
 
 services:
+  db:
+    restart: always
+    build:
+      context: ./postgree_db
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres_usr
+      - POSTGRES_PASSWORD=postgres_pass
+      - POSTGRES_DB=fake_gaspar
+
   projeto_php:
     container_name: php
     image: php
@@ -14,6 +26,7 @@ services:
       - "${PORT}:80"
 
   projeto_python_app:
+    restart: always
     build:
       context: ./projeto_python/app
       dockerfile: Dockerfile
@@ -30,6 +43,7 @@ services:
       # colocaria o container do db aqui
   
   projeto_fake_gaspar:
+    restart: always
     build:
       context: ./projeto_python/fake_gaspar
       dockerfile: Dockerfile
@@ -37,7 +51,23 @@ services:
       - "8000:8000"
     environment:
       - API_KEY=${MINHA_KEY_NO_ENV}
+      #- DATABASE_URL=postgresql://postgres_usr:postgres_pass@db:5432/fake_gaspar
+      - DATABASE_URL=sqlite+pysqlite:///database.db
     volumes:
       - type: bind
         source: ./bind_mounts/fake_gaspar
-        target: /code/downloads
+        target: /code/app_logs
+    depends_on:
+      - db
+
+  pgadmin:
+    restart: always
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db

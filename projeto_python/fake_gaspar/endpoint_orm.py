@@ -1,9 +1,13 @@
+import os
 from datetime import datetime
 from sqlalchemy import String, Boolean, Text, DateTime, create_engine
-from sqlalchemy.orm import Mapped, registry, mapped_column, sessionmaker
+from sqlalchemy.orm import Mapped, mapped_column, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from dotenv import load_dotenv
 
-engine = create_engine('sqlite+pysqlite:///database.db', echo=True)
+load_dotenv()
+
+engine = create_engine(os.environ.get("DATABASE_URL"), echo=True)
 Base = declarative_base()
 
 Session = sessionmaker(bind=engine)

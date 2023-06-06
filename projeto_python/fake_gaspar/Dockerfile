@@ -8,7 +8,7 @@ WORKDIR $ROOT_DIR
 
 COPY ./ $ROOT_DIR
 
-# RUN pip install --upgrade pip
-# RUN pip install -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-CMD python ./endpoint.py
+CMD python ./endpointlocal.py
