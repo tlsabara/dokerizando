@@ -138,31 +138,31 @@ if __name__ == '__main__':
     FILE_LOG = FILE_LOG
     print('Carregando DB')
     time.sleep(20)
-    with Session() as db:
-        Base.metadata.create_all(engine)
-        time.sleep(10)
-        inst_get = TbDefaultResponses(
-            default_reponses_route="*",
-            default_reponses_tag="def_GET_200",
-            default_reponses_content='{"method": "GET","status_code": 200,"message": "Request recebida com sucesso"}',
-            default_reponses_is_active=True,
-        )
-        inst_post = TbDefaultResponses(
-            default_reponses_route="*",
-            default_reponses_tag="def_POST_200",
-            default_reponses_content='{"method": "POST","status_code": 200,"message": "Request recebida com sucesso"}',
-            default_reponses_is_active=True,
-        )
-        inst_put = TbDefaultResponses(
-            default_reponses_route="*",
-            default_reponses_tag="def_PUT_200",
-            default_reponses_content='{"method": "PUT","status_code": 200,"message": "Request recebida com sucesso"}',
-            default_reponses_is_active=True,
-        )
-        db.add(inst_post)
-        db.add(inst_put)
-        db.add(inst_get)
-        db.commit()
+    # with Session() as db:
+    #     Base.metadata.create_all(engine)
+    #     time.sleep(10)
+    #     inst_get = TbDefaultResponses(
+    #         default_reponses_route="*",
+    #         default_reponses_tag="def_GET_200",
+    #         default_reponses_content='{"method": "GET","status_code": 200,"message": "Request recebida com sucesso"}',
+    #         default_reponses_is_active=True,
+    #     )
+    #     inst_post = TbDefaultResponses(
+    #         default_reponses_route="*",
+    #         default_reponses_tag="def_POST_200",
+    #         default_reponses_content='{"method": "POST","status_code": 200,"message": "Request recebida com sucesso"}',
+    #         default_reponses_is_active=True,
+    #     )
+    #     inst_put = TbDefaultResponses(
+    #         default_reponses_route="*",
+    #         default_reponses_tag="def_PUT_200",
+    #         default_reponses_content='{"method": "PUT","status_code": 200,"message": "Request recebida com sucesso"}',
+    #         default_reponses_is_active=True,
+    #     )
+    #     db.add(inst_post)
+    #     db.add(inst_put)
+    #     db.add(inst_get)
+    #     db.commit()
 
     base_port = 8000
 

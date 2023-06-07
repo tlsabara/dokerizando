@@ -9,8 +9,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres_usr
-      - POSTGRES_PASSWORD=postgres_pass
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=fake_gaspar
 
   projeto_php:
@@ -18,7 +18,6 @@ services:
     image: php
     restart: always
     build:
-      # DEMONSTAR AQUI
       context: ./projeto_php
       dockerfile: Dockerfile
       target: base
@@ -38,9 +37,6 @@ services:
       - COMPOSER=True
     links:
       - projeto_fake_gaspar
-    #depends:
-      #- projeto_fake_gaspar
-      # colocaria o container do db aqui
   
   projeto_fake_gaspar:
     restart: always
@@ -51,8 +47,8 @@ services:
       - "8000:8000"
     environment:
       - API_KEY=${MINHA_KEY_NO_ENV}
-      #- DATABASE_URL=postgresql://postgres_usr:postgres_pass@db:5432/fake_gaspar
-      - DATABASE_URL=sqlite+pysqlite:///database.db
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/fake_gaspar
+      #- DATABASE_URL=sqlite+pysqlite:///database.db
     volumes:
       - type: bind
         source: ./bind_mounts/fake_gaspar
@@ -65,7 +61,7 @@ services:
     container_name: pgadmin
     image: dpage/pgadmin4
     environment:
-      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+      - PGADMIN_DEFAULT_EMAIL=t@t.com
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
       - "5050:80"
