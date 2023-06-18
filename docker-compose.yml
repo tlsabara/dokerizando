@@ -47,8 +47,8 @@ services:
       - "8000:8000"
     environment:
       - API_KEY=${MINHA_KEY_NO_ENV}
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/fake_gaspar
-      #- DATABASE_URL=sqlite+pysqlite:///database.db
+      # - DATABASE_URL_ENDPOINT=postgresql://postgres:postgres@db:5432/fake_gaspar
+      - DATABASE_URL_ENDPOINT=sqlite+pysqlite:///foo.db
     volumes:
       - type: bind
         source: ./bind_mounts/fake_gaspar

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-engine = create_engine(os.environ.get("DATABASE_URL"), echo=True)
+engine = create_engine(os.environ.get("DATABASE_URL_ENDPOINT"), echo=True)
 Base = declarative_base()
 
 Session = sessionmaker(bind=engine)
@@ -42,6 +42,7 @@ class TbRequestsRecived(Base):
                f"route={self.requests_recived_route!r}, " \
                f"timestamp={self.requests_recived_timestamp!r})"
 
+# TODO: Comentado para evoluir postriormente.
 # @mapper_registry.mapped
 # class TbQueryLogs:
 #     __tablename__ = "tb_query_logs"
