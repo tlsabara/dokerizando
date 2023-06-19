@@ -7,16 +7,14 @@ from logs import fn_app_log
 from orm.models import Session, Base, engine, TbDefaultResponses, TbRequestsRecived
 
 
-
 def collect_last_50_recived_requests():
     try:
         with Session() as db:
             rows = db.execute(select(
                 TbRequestsRecived).order_by(
-                    TbRequestsRecived.requests_recived_timestamp.desc()
-                ).limit(50)
-           ).all()
-            db.commit()
+                TbRequestsRecived.requests_recived_timestamp.desc()
+            ).limit(50)).all()
+            db.close()
     except Exception as e:
         fn_app_log('Erro ao salvar no DB', str(e))
         return False
@@ -28,7 +26,6 @@ def initialize_data():
     try:
         with Session() as db:
             Base.metadata.create_all(engine)
-            time.sleep(10)
             inst_get = TbDefaultResponses(
                 default_reponses_route="*",
                 default_reponses_tag="def_GET_200",

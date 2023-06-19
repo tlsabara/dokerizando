@@ -21,19 +21,20 @@ class APIServer(BaseHTTPRequestHandler):
 
         msg_get_response = route_get_urls(self.path)
 
-        self.send_response(200)
-
-        if not msg_get_response:
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
+        if msg_get_response is False:
+            content_type = 'application/json'
             clean_response = 'GET respondido'
             msg_get_response = collect_response_data(where_tag="def_GET_200")
             msg_get_response = msg_get_response if msg_get_response else clean_response
+            msg_get_response = bytes(msg_get_response, 'utf-8')
         else:
-            self.send_header('Content-type', 'text/html')
+            content_type = 'text/html'
 
+        self.send_response(200)
+        self.send_header('Content-type', content_type)
         self.end_headers()
-        self.wfile.write(bytes(msg_get_response, 'utf-8'))
+
+        self.wfile.write(msg_get_response)
         print(f'{" fim requisicao ":-^50}')
 
     def do_POST(self):
@@ -80,7 +81,6 @@ if __name__ == '__main__':
     FILE_LOG.mkdir(parents=True, exist_ok=True)
     FILE_LOG = FILE_LOG
     print('Carregando DB')
-    time.sleep(20)
 
     if not initialize_data():
         print("DB ERROR")
